@@ -114,22 +114,23 @@ class condition extends \core_availability\condition {
         $userId = $USER->id;
 
 
-        // $sql = "SELECT SUM(processingtime) AS total_processingtime_minutes
-        // FROM mdl_ildmeta
-		// WHERE courseid IN (
-        //     SELECT courseid
-        //     FROM {course_completions}
-        //     WHERE userid = :usrid
-        //     AND `timecompleted` IS NOT NULL);";
+        $sql = "SELECT SUM(processingtime) AS total_processingtime_minutes
+        FROM {ildmeta}
+		WHERE courseid IN (
+            SELECT courseid
+            FROM {course_completions}
+            WHERE userid = :usrid
+            AND `timecompleted` IS NOT NULL);";
 
-        $sql = "SELECT SUM(im.processingtime) AS total_processingtime_minutes
-        FROM {ildmeta} AS im
-        WHERE im.courseid IN (
-            SELECT cc.course
-            FROM {course_completions} AS cc
-            WHERE cc.userid = :usrid
-            AND cc.timecompleted IS NOT NULL
-        )";
+        // chatgpts opt not working
+        // $sql = "SELECT SUM(im.processingtime) AS total_processingtime_minutes
+        // FROM {ildmeta} AS im
+        // WHERE im.courseid IN (
+        //     SELECT cc.course
+        //     FROM {course_completions} AS cc
+        //     WHERE cc.userid = :usrid
+        //     AND cc.timecompleted IS NOT NULL
+        // )";
 
         $params = ['usrid' => $userId];
 
