@@ -117,7 +117,7 @@ class condition extends \core_availability\condition {
         $sql = "SELECT SUM(processingtime) AS total_processingtime_minutes
         FROM {ildmeta}
 		WHERE courseid IN (
-            SELECT courseid
+            SELECT course
             FROM {course_completions}
             WHERE userid = :usrid
             AND `timecompleted` IS NOT NULL);";
@@ -136,18 +136,19 @@ class condition extends \core_availability\condition {
 
         // Execute the SQL query
         $totalProcessingTimeMinutes = $DB->get_field_sql($sql, $params);
+
         if($totalProcessingTimeMinutes === NULL) {
             $allow = FALSE;
         } else {
-            $sql = "SELECT COUNT(*)
+            $sql = "SELECT COUNT(id)
                     FROM {customcert_issues}
                     WHERE userid = ?";
 
             $number_of_certificates = $DB->count_records_sql($sql, [$userId]);
 
-            $alreadycerted = $this->workload * $number_of_certificates;
+            $minnotcertedyet = $totalProcessingTimeMinutes - ($this->workload * $number_of_certificates);
 
-            if($totalProcessingTimeMinutes > $alreadycerted) {
+            if($minnotcertedyet > $this->workload) {
                 $allow = TRUE;
             } else {
                 $allow = FALSE;
